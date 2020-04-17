@@ -10,17 +10,17 @@
 long least = 0;
 long huge = 0;
 int day = 0;
-char rec_fpath[20000][260]; // ´æ´¢µÝ¹éÎÄ¼þÂ·¾¶
-char user_fpath[200][260];  // ´æ´¢ÓÃ»§ÊäÈëÎÄ¼þÂ·¾¶
+char rec_fpath[20000][260]; // å­˜å‚¨é€’å½’æ–‡ä»¶è·¯å¾„
+char user_fpath[200][260];  // å­˜å‚¨ç”¨æˆ·è¾“å…¥æ–‡ä»¶è·¯å¾„
 int rec_top = 0, user_top = 0;
-int rec_id = 0, user_id = 0;    // ·Ö±ð¿ØÖÆµÝ¹éºÍÓÃ»§ÊäÈëÎÄ¼þÂ·¾¶
+int rec_id = 0, user_id = 0;    // åˆ†åˆ«æŽ§åˆ¶é€’å½’å’Œç”¨æˆ·è¾“å…¥æ–‡ä»¶è·¯å¾„
 
 void limit_print(char *d, long st_size, long mtime, int is_least, int is_huge, int is_modify, long t)
 {
-    if (is_least && is_huge) //ÊÇ·ñÎÄ¼þ´óÐ¡ÏÞÖÆ
+    if (is_least && is_huge) //æ˜¯å¦æ–‡ä»¶å¤§å°é™åˆ¶
     {
         if (st_size >= least && st_size <= huge)
-            if (is_modify && t - mtime <= day * 86400) //ÊÇ·ñÓÐÊ±¼äÏÞÖÆ
+            if (is_modify && t - mtime <= day * 86400) //æ˜¯å¦æœ‰æ—¶é—´é™åˆ¶
                 printf("%15ld \t %s\n", st_size, d);
             else if (is_modify == 0)
                 printf("%15ld \t %s\n", st_size, d);
@@ -59,9 +59,9 @@ void limit_print(char *d, long st_size, long mtime, int is_least, int is_huge, i
 
 void printdir(char *dir, int is_rec, int is_A, int is_least, int is_huge, int is_modify, long t)
 {
-    struct dirent *entry; //ÎÄ¼þÐÅÏ¢½á¹¹Ìå
-    DIR *dp;              //ÀàËÆÓÚFILE£¬´æ·ÅÄ¿Â¼ÓÐ¹ØÐÅÏ¢
-    struct stat statbuf;  //ÎÄ¼þÐÅÏ¢
+    struct dirent *entry; //æ–‡ä»¶ä¿¡æ¯ç»“æž„ä½“
+    DIR *dp;              //ç±»ä¼¼äºŽFILEï¼Œå­˜æ”¾ç›®å½•æœ‰å…³ä¿¡æ¯
+    struct stat statbuf;  //æ–‡ä»¶ä¿¡æ¯
 
     if ((dp = opendir(dir)) == NULL)
     {
@@ -74,54 +74,15 @@ void printdir(char *dir, int is_rec, int is_A, int is_least, int is_huge, int is
         {
             if (entry->d_name[0] == '.' && is_A == 0)
                 continue;
-            char d[260]; //»ñÈ¡Ä¿Â¼µÄ¾ø¶ÔÂ·¾¶
+            char d[260]; //èŽ·å–ç›®å½•çš„ç»å¯¹è·¯å¾„
             strcpy(d, dir);
             strcat(d, "/");
             strcat(d, entry->d_name);
 
             stat(d, &statbuf);
-            if (is_rec) //ÊÇ·ñµÝ¹é´òÓ¡
+            if (is_rec) //æ˜¯å¦é€’å½’æ‰“å°
                 if (S_ISDIR(statbuf.st_mode) && entry->d_name[strlen(entry->d_name) - 1] != '.')
                     strcpy(rec_fpath[rec_top++], d);
-
-            /* if (is_least && is_huge) //ÊÇ·ñÎÄ¼þ´óÐ¡ÏÞÖÆ
-            {
-                if (statbuf.st_size >= least && statbuf.st_size <= huge)
-                    if (is_modify && t - statbuf.st_mtime <= day * 86400) //ÊÇ·ñÓÐÊ±¼äÏÞÖÆ
-                        printf("%15ld \t %s\n", statbuf.st_size, d);
-                    else if (is_modify == 0)
-                        printf("%15ld \t %s\n", statbuf.st_size, d);
-                    else
-                        ;
-                else
-                    ;
-            }
-            else if (is_least)
-            {
-                if (statbuf.st_size >= least)
-                    if (is_modify && t - statbuf.st_mtime <= day * 86400)
-                        printf("%15ld \t %s\n", statbuf.st_size, d);
-                    else if (is_modify == 0)
-                        printf("%15ld \t %s\n", statbuf.st_size, d);
-                    else
-                        ;
-                else
-                    ;
-            }
-            else if (is_huge)
-            {
-                if (statbuf.st_size <= huge)
-                    if (is_modify && t - statbuf.st_mtime <= day * 86400)
-                        printf("%15ld \t %s\n", statbuf.st_size, d);
-                    else if (is_modify == 0)
-                        printf("%15ld \t %s\n", statbuf.st_size, d);
-                    else
-                        ;
-                else
-                    ;
-            }
-            else
-                printf("%15ld \t %s\n", statbuf.st_size, d); */
             limit_print(d, statbuf.st_size, statbuf.st_mtime, is_least, is_huge, is_modify, t);
         }
         while (rec_id < rec_top)
@@ -135,7 +96,7 @@ void printdir(char *dir, int is_rec, int is_A, int is_least, int is_huge, int is
     return;
 }
 
-// ÅÐ¶Ï×Ö·û´®ÊÇ·ñÈ«ÊÇÊý×Ö
+// åˆ¤æ–­å­—ç¬¦ä¸²æ˜¯å¦å…¨æ˜¯æ•°å­—
 int is_digit(char *str)
 {
     return (strspn(str, "0123456789") == strlen(str));
@@ -149,7 +110,7 @@ int main(int argc, char *argv[])
     int is_rec = 0, is_A = 0, is_least = 0, is_huge = 0, is_modify = 0;
     
     int opt;
-    int option_id = 0;  // argv²ÎÊýÏÂ±ê
+    int option_id = 0;  // argvå‚æ•°ä¸‹æ ‡
     char *optstring = "ral:h:m:";
     static struct option long_options[] =
     {
@@ -180,7 +141,7 @@ int main(int argc, char *argv[])
         {
             is_least = 1;
             least = atoi(optarg);
-            if (!is_digit(optarg))  //ÃüÁî´íÎó...-lk
+            if (!is_digit(optarg))  //å‘½ä»¤é”™è¯¯...-lk
             {
                 printf("'-l/--least' option missing a arg or arg error\n");
                 is_least = 0;
@@ -191,7 +152,7 @@ int main(int argc, char *argv[])
         {
             is_huge = 1;
             huge = atoi(optarg);
-            if (!is_digit(optarg)) //ÃüÁî´íÎó...-hk
+            if (!is_digit(optarg)) //å‘½ä»¤é”™è¯¯...-hk
             {
                 printf("'-h/--huge' option missing a arg or arg error\n");
                 return 0;
@@ -201,13 +162,13 @@ int main(int argc, char *argv[])
         {
             is_modify = 1;
             day = atoi(optarg);
-            if (!is_digit(optarg)) //ÃüÁî´íÎó...-mk
+            if (!is_digit(optarg)) //å‘½ä»¤é”™è¯¯...-mk
             {
                 printf("'-m/--modify' option missing a arg or arg error\n");
                 return 0;
             }
         }
-        else    //ÎÞ·¨Ê¶±ðµÄoption
+        else    //æ— æ³•è¯†åˆ«çš„option
         {
             printf("Invalid option for list\n");
             return 0;
@@ -215,7 +176,7 @@ int main(int argc, char *argv[])
     }
 
     //printf("%d %d %d\n", optind, user_id, user_top);
-    while(optind < argc)    //´¦ÀíÓÃ»§ÊäÈëÂ·¾¶Ãû
+    while(optind < argc)    //å¤„ç†ç”¨æˆ·è¾“å…¥è·¯å¾„å
     {
         strcpy(user_fpath[user_top++], argv[optind]);
         stat(argv[optind], &st);
@@ -236,7 +197,7 @@ int main(int argc, char *argv[])
     }
     //printf("%d %d %d\n", optind, user_id, user_top);
 
-    if (strcmp(wd, ".") == 0 && user_top == 0)  // Ä¬ÈÏÊäÈë
+    if (strcmp(wd, ".") == 0 && user_top == 0)  // é»˜è®¤è¾“å…¥
     {
         printf("%s: \n", wd);
         printdir(wd, is_rec, is_A, is_least, is_huge, is_modify, t);
